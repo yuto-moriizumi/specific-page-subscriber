@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { aws, model } from 'dynamoose';
+import { aws } from 'dynamoose';
 import { getDB } from '../utils';
-import { TABLE_NAME } from '../constant';
-import { Item } from 'dynamoose/dist/Item';
+import { SubscriptionModel } from '../Subscription';
 
 type Data =
   | {
@@ -27,23 +26,16 @@ export default async function handler(
     res.status(400).json({ message: 'The specified url is invalid' });
     return;
   }
-  const data = req.body as { rank?: number; has_new?: boolean };
-  // const result = await ddb.updateItem({
-  //   TableName: TABLE_NAME,
-  //   Key: { sub_url: url },
-  // });
-  // res.status(200).json({ subscriptions: result.Items ?? [] });
-
-  // Strongly typed model
-  class Cat extends Item {
-    id!: number;
-    name!: string;
+  const subscription = await SubscriptionModel.get(url);
+  if (req.method === 'PATCH') {
+    const data = req.body as { rank?: number; has_new?: boolean };
+    subscription.rank = subscription.rank ?? data.rank;
+    subscription.has_new = subscription.has_new ?? data.has_new;
+    await subscription.save();
+    res.status(204);
+  } else if (req.method === 'DELETE') {
+    await subscription.delete();
+    res.status(204);
   }
-  const CatModel = model<Cat>('Cat', { id: Number, name: String });
-
-  // Will raise type checking error as random is not a valid field.
-  CatModel.create({ id: 1, name: 'Hello' });
-
-  // Will return the correct type of Cat
-  const cat = await CatModel.get(1);
+  res.status(405);
 }
