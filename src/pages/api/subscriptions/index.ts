@@ -2,10 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import dynamoose, { model, Table } from 'dynamoose';
 import { getDB } from '../utils';
 import { TABLE_NAME } from '../constant';
+import { Subscription, SubscriptionModel } from '../model/Subscription';
 
-type Data =
+export type Data =
   | {
-      subscriptions: Record<string, object>[];
+      subscriptions: Subscription[];
     }
   | {
       message: string;
@@ -21,7 +22,7 @@ export default async function handler(
     return;
   }
   dynamoose.aws.ddb.set(ddb);
-  const result = await ddb.scan({ TableName: TABLE_NAME });
+  const result = await SubscriptionModel.scan().exec();
 
-  res.status(200).json({ subscriptions: result.Items ?? [] });
+  res.status(200).json({ subscriptions: result.slice() ?? [] });
 }

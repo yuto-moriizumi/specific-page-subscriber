@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { aws } from 'dynamoose';
 import { getDB } from '../utils';
-import { SubscriptionModel } from '../Subscription';
+import { SubscriptionModel } from '../model/Subscription';
 
 type Data =
   | {

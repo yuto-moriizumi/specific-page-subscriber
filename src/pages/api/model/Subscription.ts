@@ -1,7 +1,7 @@
 import { model } from 'dynamoose';
 import { Item } from 'dynamoose/dist/Item';
 
-class Subscription extends Item {
+export class Subscription extends Item {
   sub_url!: string;
   work_url!: string;
   title!: string;
