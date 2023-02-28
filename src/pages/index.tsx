@@ -3,12 +3,14 @@ import Image from 'next/image';
 import { Inter } from '@next/font/google';
 import axios from 'axios';
 import {
+  Box,
   Button,
   Card,
   CardActionArea,
   CardActions,
   CardContent,
   CardMedia,
+  createTheme,
   Fab,
   IconButton,
   Rating,
@@ -17,13 +19,14 @@ import {
   Typography,
 } from '@mui/material';
 import { Subscription } from './api/model/Subscription';
-import { Data } from './api/subscriptions';
 import { DeleteForever, Add } from '@mui/icons-material';
+import { Container } from '@mui/system';
 
 const inter = Inter({ subsets: ['latin'] });
 
 type Props = { subscriptions: Subscription[]; token: string };
 
+const theme = createTheme();
 export default function Home({ subscriptions, token }: Props) {
   return (
     <>
@@ -33,13 +36,23 @@ export default function Home({ subscriptions, token }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={inter.className}>
-        <Stack>
-          <Typography>Specific Page Subscriber</Typography>
-          <Stack direction="row">
-            <Typography>Token</Typography>
-            <TextField placeholder="Your token here" defaultValue={token} />
-            <Button>Submit</Button>
-          </Stack>
+        <Stack spacing={2}>
+          <Typography variant="h2" textAlign="center">
+            Specific Page Subscriber
+          </Typography>
+          <Box>
+            <Container maxWidth="sm">
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography>Token</Typography>
+                <TextField placeholder="Your token here" defaultValue={token} />
+                <Button>Submit</Button>
+              </Stack>
+            </Container>
+          </Box>
           {subscriptions.map((subscription) => (
             <Card key={subscription.sub_url}>
               <CardActionArea href={subscription.work_url}>
@@ -65,7 +78,15 @@ export default function Home({ subscriptions, token }: Props) {
             </Card>
           ))}
         </Stack>
-        <Fab color="primary" aria-label="add">
+        <Fab
+          variant="extended"
+          color="primary"
+          sx={{
+            position: 'fixed',
+            bottom: theme.spacing(3),
+            right: theme.spacing(3),
+          }}
+        >
           <Add />
           <Typography>Add a new card</Typography>
         </Fab>
