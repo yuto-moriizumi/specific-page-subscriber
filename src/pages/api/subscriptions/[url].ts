@@ -1,12 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { aws } from 'dynamoose';
-import { getDB } from '../utils';
-import { SubscriptionModel } from '../model/Subscription';
+import { getAxiosClient, getDB } from '../utils';
+import {
+  Subscription,
+  SubscriptionModel,
+  updateSubscription,
+} from '../model/Subscription';
 
 type Data =
-  | {
-      subscriptions: Record<string, object>[];
-    }
+  | Subscription
   | {
       message: string;
     };
@@ -26,16 +28,27 @@ export default async function handler(
     res.status(400).json({ message: 'The specified url is invalid' });
     return;
   }
-  const subscription = await SubscriptionModel.get(url);
-  if (req.method === 'PATCH') {
+
+  if (req.method === 'POST') {
+    const data = req.body as Subscription;
+    const client = await getAxiosClient();
+    const rawSubscription = new SubscriptionModel(data);
+    const subscription = await updateSubscription(rawSubscription, client);
+    res.status(204).json(subscription ?? rawSubscription);
+    return;
+  } else if (req.method === 'PATCH') {
+    const subscription = await SubscriptionModel.get(url);
     const data = req.body as { rank?: number; has_new?: boolean };
     subscription.rank = subscription.rank ?? data.rank;
     subscription.has_new = subscription.has_new ?? data.has_new;
     await subscription.save();
     res.status(204);
+    return;
   } else if (req.method === 'DELETE') {
+    const subscription = await SubscriptionModel.get(url);
     await subscription.delete();
     res.status(204);
+    return;
   }
   res.status(405);
 }
