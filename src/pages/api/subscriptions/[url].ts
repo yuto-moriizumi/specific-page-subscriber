@@ -32,9 +32,9 @@ export default async function handler(
   if (req.method === 'POST') {
     const data = req.body as Subscription;
     const client = await getAxiosClient();
-    const rawSubscription = new SubscriptionModel(data);
-    const subscription = await updateSubscription(rawSubscription, client);
-    res.status(204).json(subscription ?? rawSubscription);
+    const subscription = await new SubscriptionModel(data).update(client);
+    // const subscription = await updateSubscription(rawSubscription, client);
+    res.status(204).json(subscription);
     return;
   } else if (req.method === 'PATCH') {
     const subscription = await SubscriptionModel.get(url);

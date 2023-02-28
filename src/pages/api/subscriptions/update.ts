@@ -21,7 +21,8 @@ export default async function handler(
   const subscriptions = await SubscriptionModel.scan().exec();
   //各購読を直列に更新（API制限のため）
   for (const subscription of subscriptions) {
-    await updateSubscription(subscription, client);
+    subscription.update(client);
+    // await updateSubscription(subscription, client);
   }
   res.status(204);
 }
