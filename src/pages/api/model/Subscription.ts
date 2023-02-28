@@ -12,13 +12,16 @@ export class Subscription extends Item {
   has_new!: boolean;
 }
 
-export const SubscriptionModel = model<Subscription>('Subscription', {
-  sub_url: String,
-  work_url: String,
-  title: String,
-  image: String,
-  updated_at: Number,
-  name: String,
-  rank: Number,
-  has_new: Boolean,
-});
+export const SubscriptionModel = model<Subscription>(
+  'specific-page-subscriber-subscription',
+  {
+    sub_url: String,
+    work_url: String,
+    title: String,
+    image: String,
+    updated_at: Number,
+    name: String,
+    rank: Number,
+    has_new: Boolean,
+  }
+);

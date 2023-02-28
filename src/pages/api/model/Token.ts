@@ -6,7 +6,7 @@ class Token extends Item {
   value!: string;
 }
 
-export const TokenModel = model<Token>('Token', {
+export const TokenModel = model<Token>('specific-page-subscriber-config', {
   key: String,
   value: String,
 });

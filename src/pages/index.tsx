@@ -20,7 +20,7 @@ import { Subscription } from './api/model/Subscription';
 import { Data } from './api/subscriptions';
 import { DeleteForever, Add } from '@mui/icons-material';
 
-const inter = Inter();
+const inter = Inter({ subsets: ['latin'] });
 
 type Props = { subscriptions: Subscription[]; token: string };
 
@@ -75,11 +75,15 @@ export default function Home({ subscriptions, token }: Props) {
 }
 
 export async function getServerSideProps() {
-  const { data } = await axios.get<Data>(
+  const {
+    data: { subscriptions },
+  } = await axios.get<{ subscriptions: string }>(
     'http://localhost:3000/api/subscriptions'
   );
-  const res = await axios.get<{ token: string }>(
-    'http://localhost:3000/api/token'
-  );
-  return { props: { subscriptions: data, token: res.data.token } };
+  const {
+    data: { token },
+  } = await axios.get<{ token: string }>('http://localhost:3000/api/token');
+  return {
+    props: { subscriptions: subscriptions, token: token },
+  };
 }
