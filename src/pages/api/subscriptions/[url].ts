@@ -1,11 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { aws } from 'dynamoose';
-import { getAxiosClient, getDB } from '../utils';
-import {
-  Subscription,
-  SubscriptionModel,
-  updateSubscription,
-} from '../model/Subscription';
+import { getDB } from '../utils';
+import { Subscription, SubscriptionModel } from '../model/Subscription';
 
 type Data =
   | Subscription
@@ -23,20 +19,13 @@ export default async function handler(
     return;
   }
   aws.ddb.set(ddb);
-  const { url } = req.query;
-  if (url === undefined || url instanceof Array) {
+  const { url: rawUrl } = req.query;
+  if (rawUrl === undefined || rawUrl instanceof Array) {
     res.status(400).json({ message: 'The specified url is invalid' });
     return;
   }
-
-  if (req.method === 'POST') {
-    const data = req.body as Subscription;
-    const client = await getAxiosClient();
-    const subscription = await new SubscriptionModel(data).update(client);
-    // const subscription = await updateSubscription(rawSubscription, client);
-    res.status(204).json(subscription);
-    return;
-  } else if (req.method === 'PATCH') {
+  const url = decodeURI(rawUrl);
+  if (req.method === 'PATCH') {
     const subscription = await SubscriptionModel.get(url);
     const data = req.body as { rank?: number; has_new?: boolean };
     subscription.rank = subscription.rank ?? data.rank;

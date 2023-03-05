@@ -12,7 +12,10 @@ import {
   CardMedia,
   createTheme,
   Fab,
+  Grid,
   IconButton,
+  Modal,
+  Paper,
   Rating,
   Snackbar,
   Stack,
@@ -22,7 +25,10 @@ import {
 import { Subscription } from './api/model/Subscription';
 import { DeleteForever, Add } from '@mui/icons-material';
 import { Container } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Item } from 'dynamoose/dist/Item';
+
+const DEFAULT_RANK = 3;
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,12 +36,23 @@ type Props = { subscriptions: Subscription[]; token: string };
 
 const theme = createTheme();
 export default function Home({ subscriptions, token: defaultToken }: Props) {
-  const [isTokenSnackOpen, setIsTokenSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState<string | undefined>(
+    undefined
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [token, setToken] = useState(defaultToken);
+  const [url, setUrl] = useState('');
+  const [rank, setRate] = useState(DEFAULT_RANK);
   const updateToken = () => {
     axios
       .put('http://localhost:3000/api/token', { token })
-      .then(() => setIsTokenSnackOpen(true));
+      .then(() => setSnackMessage('トークンを更新しました'));
+  };
+  const addSubscription = () => {
+    axios
+      .post('http://localhost:3000/api/subscriptions', { sub_url: url, rank })
+      .then(() => setSnackMessage('購読を追加しました'));
+    setIsModalOpen(false);
   };
   return (
     <>
@@ -45,11 +62,33 @@ export default function Home({ subscriptions, token: defaultToken }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Snackbar
-        open={isTokenSnackOpen}
+        open={!!snackMessage}
         autoHideDuration={6000}
-        onClose={() => setIsTokenSnackOpen(false)}
-        message="トークンを更新しました"
+        onClose={() => setSnackMessage(undefined)}
+        message={snackMessage}
       />
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Container
+          maxWidth="sm"
+          sx={{
+            position: 'relative',
+            top: '50%',
+            transform: 'translate(0%, -50%)',
+          }}
+        >
+          <Paper sx={{ padding: '1rem' }}>
+            <Stack spacing={1}>
+              <Typography variant="h3">新規購読を追加</Typography>
+              <TextField label="URL" onChange={(v) => setUrl(v.target.value)} />
+              <Rating
+                value={rank}
+                onChange={(_, v) => setRate(v ?? DEFAULT_RANK)}
+              />
+              <Button onClick={() => addSubscription()}>Submit</Button>
+            </Stack>
+          </Paper>
+        </Container>
+      </Modal>
       <main className={inter.className}>
         <Stack spacing={2}>
           <Typography variant="h2" textAlign="center">
@@ -72,31 +111,38 @@ export default function Home({ subscriptions, token: defaultToken }: Props) {
               </Stack>
             </Container>
           </Box>
-          {subscriptions.map((subscription) => (
-            <Card key={subscription.sub_url}>
-              <CardActionArea href={subscription.work_url}>
-                <CardMedia
-                  component={Image}
-                  image={subscription.image}
-                  alt={subscription.sub_url}
-                />
-              </CardActionArea>
-              <CardActions>
-                <Rating />
-                <Button color={subscription.has_new ? 'primary' : 'secondary'}>
-                  {subscription.has_new ? 'NEW' : 'READ'}
-                </Button>
-                <IconButton>
-                  <DeleteForever />
-                </IconButton>
-              </CardActions>
-              <CardContent>
-                <Typography>{subscription.sub_url}</Typography>
-                <Typography>{subscription.title}</Typography>
-              </CardContent>
-            </Card>
-          ))}
+          <Grid container spacing={2}>
+            {subscriptions.map((subscription) => (
+              <Grid key={subscription.sub_url} xs={12} sm={4} md={3} lg={2}>
+                <Card>
+                  <CardActionArea href={subscription.work_url}>
+                    <CardMedia
+                      image={subscription.image}
+                      referrerPolicy="no-referrer"
+                      component={'img'}
+                    />
+                  </CardActionArea>
+                  <CardActions>
+                    <Rating />
+                    <Button
+                      color={subscription.has_new ? 'primary' : 'secondary'}
+                    >
+                      {subscription.has_new ? 'NEW' : 'READ'}
+                    </Button>
+                    <IconButton>
+                      <DeleteForever />
+                    </IconButton>
+                  </CardActions>
+                  <CardContent>
+                    <Typography>{subscription.sub_url}</Typography>
+                    <Typography>{subscription.title}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Stack>
+
         <Fab
           variant="extended"
           color="primary"
@@ -105,6 +151,7 @@ export default function Home({ subscriptions, token: defaultToken }: Props) {
             bottom: theme.spacing(3),
             right: theme.spacing(3),
           }}
+          onClick={() => setIsModalOpen(true)}
         >
           <Add />
           <Typography>Add a new card</Typography>

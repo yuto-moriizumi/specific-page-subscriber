@@ -24,8 +24,8 @@ export const getAxiosClient = async () => {
   return axios.create({
     headers: {
       'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0',
-      Cookie: 'cf_clearance=' + token,
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0',
+      Cookie: 'cf_clearance=' + token.value,
     },
   });
 };
