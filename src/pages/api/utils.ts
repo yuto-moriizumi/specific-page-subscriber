@@ -1,20 +1,19 @@
 import axios from 'axios';
 import { aws } from 'dynamoose';
 import { AWS_REGION, TOKEN_NAME } from './constant';
-import { SubscriptionModel } from './model/Subscription';
 import { TokenModel } from './model/Token';
 
 export const getDB = () => {
-  const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-  const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-  if (AWS_ACCESS_KEY_ID === undefined || AWS_SECRET_ACCESS_KEY === undefined) {
+  const ACCESS_KEY_ID = process.env.DB_ACCESS_KEY_ID;
+  const SECRET_ACCESS_KEY = process.env.DB_SECRET_ACCESS_KEY;
+  if (ACCESS_KEY_ID === undefined || SECRET_ACCESS_KEY === undefined) {
     return;
   }
   // Create new DynamoDB instance
   return new aws.ddb.DynamoDB({
     credentials: {
-      accessKeyId: AWS_ACCESS_KEY_ID,
-      secretAccessKey: AWS_SECRET_ACCESS_KEY,
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY,
     },
     region: AWS_REGION,
   });

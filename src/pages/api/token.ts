@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import dynamoose, { model, Table } from 'dynamoose';
+import dynamoose from 'dynamoose';
 import { getDB } from './utils';
-import { TABLE_NAME, TOKEN_NAME } from './constant';
+import { TOKEN_NAME } from './constant';
 import { TokenModel } from './model/Token';
 
 type Data =
@@ -29,8 +29,8 @@ export default async function handler(
     const data = req.body as { token: string };
     token.value = data.token;
     await token.save();
-    res.status(204);
+    res.status(204).end();
     return;
   }
-  res.status(405);
+  res.status(405).end();
 }

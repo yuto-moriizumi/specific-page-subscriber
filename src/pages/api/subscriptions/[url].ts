@@ -42,13 +42,13 @@ export default async function handler(
     subscription.rank = subscription.rank ?? data.rank;
     subscription.has_new = subscription.has_new ?? data.has_new;
     await subscription.save();
-    res.status(204);
+    res.status(204).end();
     return;
   } else if (req.method === 'DELETE') {
     const subscription = await SubscriptionModel.get(url);
     await subscription.delete();
-    res.status(204);
+    res.status(204).end();
     return;
   }
-  res.status(405);
+  res.status(405).end();
 }

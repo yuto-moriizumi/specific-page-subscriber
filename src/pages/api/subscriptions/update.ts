@@ -24,5 +24,5 @@ export default async function handler(
     subscription.update(client);
     // await updateSubscription(subscription, client);
   }
-  res.status(204);
+  res.status(204).end();
 }

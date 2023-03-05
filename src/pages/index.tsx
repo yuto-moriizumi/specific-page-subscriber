@@ -14,6 +14,7 @@ import {
   Fab,
   IconButton,
   Rating,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -21,13 +22,21 @@ import {
 import { Subscription } from './api/model/Subscription';
 import { DeleteForever, Add } from '@mui/icons-material';
 import { Container } from '@mui/system';
+import { useEffect, useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
 type Props = { subscriptions: Subscription[]; token: string };
 
 const theme = createTheme();
-export default function Home({ subscriptions, token }: Props) {
+export default function Home({ subscriptions, token: defaultToken }: Props) {
+  const [isTokenSnackOpen, setIsTokenSnackOpen] = useState(false);
+  const [token, setToken] = useState(defaultToken);
+  const updateToken = () => {
+    axios
+      .put('http://localhost:3000/api/token', { token })
+      .then(() => setIsTokenSnackOpen(true));
+  };
   return (
     <>
       <Head>
@@ -35,6 +44,12 @@ export default function Home({ subscriptions, token }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Snackbar
+        open={isTokenSnackOpen}
+        autoHideDuration={6000}
+        onClose={() => setIsTokenSnackOpen(false)}
+        message="トークンを更新しました"
+      />
       <main className={inter.className}>
         <Stack spacing={2}>
           <Typography variant="h2" textAlign="center">
@@ -48,8 +63,12 @@ export default function Home({ subscriptions, token }: Props) {
                 alignItems="center"
               >
                 <Typography>Token</Typography>
-                <TextField placeholder="Your token here" defaultValue={token} />
-                <Button>Submit</Button>
+                <TextField
+                  placeholder="Your token here"
+                  defaultValue={defaultToken}
+                  onChange={(v) => setToken(v.target.value)}
+                />
+                <Button onClick={() => updateToken()}>Submit</Button>
               </Stack>
             </Container>
           </Box>
