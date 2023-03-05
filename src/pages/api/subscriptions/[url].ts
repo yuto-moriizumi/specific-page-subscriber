@@ -28,8 +28,8 @@ export default async function handler(
   if (req.method === 'PATCH') {
     const subscription = await SubscriptionModel.get(url);
     const data = req.body as { rank?: number; has_new?: boolean };
-    subscription.rank = subscription.rank ?? data.rank;
-    subscription.has_new = subscription.has_new ?? data.has_new;
+    subscription.rank = data.rank ?? subscription.rank;
+    subscription.has_new = data.has_new ?? subscription.has_new;
     await subscription.save();
     res.status(204).end();
     return;
