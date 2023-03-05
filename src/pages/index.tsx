@@ -117,13 +117,16 @@ export default function Home({ subscriptions, token: defaultToken }: Props) {
                 <Card>
                   <CardActionArea href={subscription.work_url}>
                     <CardMedia
-                      image={subscription.image}
+                      image={
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Leopold_ii_garter_knight_fix.jpg/320px-Leopold_ii_garter_knight_fix.jpg' ??
+                        subscription.image
+                      }
                       referrerPolicy="no-referrer"
                       component={'img'}
                     />
                   </CardActionArea>
                   <CardActions>
-                    <Rating />
+                    <Rating readOnly value={subscription.rank} />
                     <Button
                       color={subscription.has_new ? 'primary' : 'secondary'}
                     >
@@ -133,7 +136,7 @@ export default function Home({ subscriptions, token: defaultToken }: Props) {
                       <DeleteForever />
                     </IconButton>
                   </CardActions>
-                  <CardContent>
+                  <CardContent sx={{ padding: '0.5rem' }}>
                     <Typography>{subscription.sub_url}</Typography>
                     <Typography>{subscription.title}</Typography>
                   </CardContent>
