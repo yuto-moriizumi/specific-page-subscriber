@@ -21,10 +21,11 @@ import {
   Typography,
 } from '@mui/material';
 import { Subscription } from './api/model/Subscription';
-import { DeleteForever, Add } from '@mui/icons-material';
 import { Container } from '@mui/system';
 import { useState } from 'react';
 import { Modal } from '@/components/Modal';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import Add from '@mui/icons-material/Add';
 
 const DEFAULT_RANK = 3;
 
