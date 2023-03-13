@@ -185,10 +185,7 @@ export default function Home({
                   <Card sx={{ height: '100%' }}>
                     <CardActionArea href={work_url ?? ''}>
                       <CardMedia
-                        image={
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Leopold_ii_garter_knight_fix.jpg/320px-Leopold_ii_garter_knight_fix.jpg' ??
-                          image
-                        }
+                        image={image}
                         referrerPolicy="no-referrer"
                         component={'img'}
                       />
