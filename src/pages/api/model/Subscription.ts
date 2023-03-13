@@ -72,6 +72,7 @@ export async function updateSubscription(
       subscription.image =
         book.querySelector('img')?.getAttribute('data-src') ?? 'undefined';
       subscription.updated_at = Date.now();
+      subscription.work_url = book_url;
       subscription.has_new = true;
       subscription.save();
       return subscription;
